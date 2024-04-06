@@ -23,6 +23,8 @@ class PlayState extends FlxState
 	var textfield:FlxUIInputText;
 	var button:FlxButton;
 	var timer:FlxTimer = new FlxTimer();
+	var playerLabel:Array<FlxText> = [];
+	var first:Bool = true;
 
 	/**
 	 * Jugador izquierda
@@ -74,21 +76,17 @@ class PlayState extends FlxState
 			return;
 		}
 		comenzarJuego(n);
-		/*
-			new FlxTimer().start(1, function(tmr:FlxTimer)
-			{
-				reset();
-			});
-		 */
 	}
 
 	function comenzarJuego(n:Int)
 	{
+		first = false;
 		var jugadoresGanados = {
 			player1: 0,
 			player2: 0,
 			player3: 0,
-			player4: 0
+			player4: 0,
+			tie: 0
 		};
 		var ultimaFicha1 = {
 			x: 0.0,
@@ -104,7 +102,7 @@ class PlayState extends FlxState
 			s: 0,
 			angle: -90
 		};
-		// var primeraJugada:Bool = true;
+
 		var pass:Int = 0;
 		var tamanio = 44;
 		var jugador:Int = 0;
@@ -128,7 +126,7 @@ class PlayState extends FlxState
 
 		function calcularPuntos()
 		{
-			var arr = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+			var arr = [0, 0, 0, 0];
 			for (i in players)
 			{
 				for (j in i)
@@ -136,24 +134,25 @@ class PlayState extends FlxState
 					if (j != null)
 					{
 						if (i == player1)
-							arr.set(1, arr.get(1) + j.points);
+							arr[0] += j.points;
 						else if (i == player2)
-							arr.set(2, arr.get(2) + j.points);
+							arr[1] += j.points;
 						else if (i == player3)
-							arr.set(3, arr.get(3) + j.points);
+							arr[2] += j.points;
 						else if (i == player4)
-							arr.set(4, arr.get(4) + j.points);
+							arr[3] += j.points;
 					}
 				}
 			}
-			var h = 0;
-			var p = 0;
-			for (k => v in arr)
+			print(arr.toString());
+			var l = arr[0];
+			var p = 1;
+			for (k in 1...arr.length)
 			{
-				if (v > h)
+				if (arr[k] < l)
 				{
-					h = v;
-					p = k;
+					l = arr[k];
+					p = k + 1;
 				}
 			}
 			return p;
@@ -202,7 +201,6 @@ class PlayState extends FlxState
 			while (!termina)
 			{
 				tamanio = 44;
-				print('-${jugador}-');
 				switch (jugador)
 				{
 					case 1: // Jugador 1
@@ -506,6 +504,7 @@ class PlayState extends FlxState
 				{
 					print("Juego fallido");
 					var w = calcularPuntos();
+					print(w);
 					switch (w)
 					{
 						case 1:
@@ -520,6 +519,9 @@ class PlayState extends FlxState
 						case 4:
 							print("Jugador 4 Gana");
 							jugadoresGanados.player4++;
+						case _:
+							print("Empate");
+							jugadoresGanados.tie++;
 					}
 					break;
 				}
@@ -529,7 +531,7 @@ class PlayState extends FlxState
 				openResultState(jugadoresGanados);
 		}
 
-		timer.start(0.5, juego, n);
+		timer.start(0.3, juego, n);
 	}
 
 	function reset()
@@ -630,27 +632,6 @@ class PlayState extends FlxState
 		}
 	}
 
-	/*
-		function buscarFichaN(arr:Array<Ficha>, n:Int, s:Int)
-		{
-			for (i in arr)
-			{
-				if (i.North == s)
-					return arr.indexOf(i);
-			}
-			return -1;
-		}
-
-		function buscarFichaS(arr:Array<Ficha>, n:Int, s:Int)
-		{
-			for (i in arr)
-			{
-				if (i.South == s)
-					return arr.indexOf(i);
-			}
-			return -1;
-		}
-	 */
 	function buscarFicha(arr:Array<Ficha>, s:Int)
 	{
 		for (i in arr)
@@ -744,10 +725,23 @@ class PlayState extends FlxState
 		return button;
 	}
 
+	function setLabels()
+	{
+		playerLabel.push(new FlxText(player1XY.x, player1XY.y - 20, 0, "Jugador 1"));
+		playerLabel.push(new FlxText(player2XY.x - 300, player2XY.y, 0, "Jugador 2"));
+		playerLabel.push(new FlxText(player3XY.x, player3XY.y - 20, 0, "Jugador 3"));
+		playerLabel.push(new FlxText(player4XY.x, player4XY.y - 50, 0, "Jugador 4"));
+		for (spr in playerLabel)
+		{
+			add(spr);
+		}
+	}
+
 	function onButtonClicked()
 	{
 		print("Starting...");
-		// openResult();
+		if (!first)
+			reset();
 		Simulacion(Std.parseInt(textfield.text));
 	}
 
@@ -758,6 +752,7 @@ class PlayState extends FlxState
 		add(setText("¿Cuantos juegos quieres jugar?", 20, 650));
 		add(setTextField(20, 675));
 		add(setButton("Simular", 150, 680));
+		setLabels();
 	}
 
 	override public function update(elapsed:Float)

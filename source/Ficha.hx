@@ -56,6 +56,6 @@ class Ficha extends FlxSprite
 
 	function get_points():Int
 	{
-		return North + South;
+		return (North == 0 && South == 0) ? 50 : North + South;
 	}
 }
