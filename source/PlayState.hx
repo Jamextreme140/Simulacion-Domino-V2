@@ -1,6 +1,7 @@
 package;
 
 import Ficha;
+import Utils;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -155,7 +156,7 @@ class PlayState extends FlxState
 					p = k + 1;
 				}
 			}
-			return p;
+			return (Utils.arrayDuplicates(arr)) ? -1 : p;
 		}
 
 		function juego(t:FlxTimer)
@@ -531,7 +532,7 @@ class PlayState extends FlxState
 				openResultState(jugadoresGanados);
 		}
 
-		timer.start(0.3, juego, n);
+		timer.start(0.5, juego, n);
 	}
 
 	function reset()
@@ -640,21 +641,6 @@ class PlayState extends FlxState
 				return arr.indexOf(i);
 		}
 		return -1;
-	}
-
-	@:noCompletion function buscarMula(x:Ficha)
-	{
-		for (i in players)
-		{
-			for (j in i)
-			{
-				if (j.North == 6 && j.South == 6)
-				{
-					return i;
-				}
-			}
-		}
-		return null;
 	}
 
 	/**

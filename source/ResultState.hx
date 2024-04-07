@@ -11,12 +11,13 @@ class ResultState extends FlxSubState
 	var jugadoresGanados:PlayerList;
 	var info:FlxText;
 	var bars:Array<FlxSprite>;
+	var barsLabels:Array<FlxText>;
 
 	var pr:Float = 0;
 
 	public function new(players:PlayerList)
 	{
-		super(FlxColor.fromRGB(0, 0, 0, 128));
+		super(FlxColor.fromRGB(0, 0, 0, 150));
 		jugadoresGanados = players;
 	}
 
@@ -35,25 +36,30 @@ class ResultState extends FlxSubState
         \nJugador 1: ${jugadoresGanados.player1}
         \nJugador 2: ${jugadoresGanados.player2}
         \nJugador 3: ${jugadoresGanados.player3}
-        \nJugador 4: ${jugadoresGanados.player4}';
+        \nJugador 4: ${jugadoresGanados.player4}
+		\nEmpates: ${jugadoresGanados.tie}';
 		info.size = 24;
+		info.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 3);
 		info.screenCenter();
 
 		pr = jugadoresGanados.player1 + jugadoresGanados.player2 + jugadoresGanados.player3 + jugadoresGanados.player4;
 		// 60, 670 | w: 600 max.
 		bars = new Array();
+		barsLabels = new Array();
 		for (i in 0...4)
 		{
-			var bar = new FlxSprite(70 * (i + 1) + 30, 600).makeGraphic(80, 1);
+			var barLabel = new FlxText(80 * (i + 1) + 50, 140, 0, 'Jugador ${i + 1}');
+			var bar = new FlxSprite(80 * (i + 1) + 50, 300).makeGraphic(80, 1);
 			bar.color = FlxG.random.color();
-			bar.screenCenter(FlxAxes.Y);
+			// bar.screenCenter(FlxAxes.Y);
+			barsLabels.push(barLabel);
 			bars.push(bar);
 		}
 
-		bars[0].setGraphicSize(80, 600 * (jugadoresGanados.player1 / pr));
-		bars[1].setGraphicSize(80, 600 * (jugadoresGanados.player2 / pr));
-		bars[2].setGraphicSize(80, 600 * (jugadoresGanados.player3 / pr));
-		bars[3].setGraphicSize(80, 600 * (jugadoresGanados.player4 / pr));
+		bars[0].setGraphicSize(80, 450 * (jugadoresGanados.player1 / pr));
+		bars[1].setGraphicSize(80, 450 * (jugadoresGanados.player2 / pr));
+		bars[2].setGraphicSize(80, 450 * (jugadoresGanados.player3 / pr));
+		bars[3].setGraphicSize(80, 450 * (jugadoresGanados.player4 / pr));
 
 		var closebtn = new FlxButton(0, 680, "Cerrar", () ->
 		{
@@ -65,8 +71,14 @@ class ResultState extends FlxSubState
 		add(info);
 		for (j in bars)
 		{
+			j.updateHitbox();
 			add(j);
 		}
+		for (k in barsLabels)
+		{
+			add(k);
+		}
+		add(new FlxText(80, 590, 0, '${pr}'));
 		add(closebtn);
 	}
 }
