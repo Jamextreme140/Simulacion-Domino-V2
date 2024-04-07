@@ -25,6 +25,8 @@ class PlayState extends FlxState
 	var button:FlxButton;
 	var timer:FlxTimer = new FlxTimer();
 	var playerLabel:Array<FlxText> = [];
+	var gameLabel:FlxText;
+	var elapsedGame:FlxText;
 	var first:Bool = true;
 
 	/**
@@ -171,6 +173,7 @@ class PlayState extends FlxState
 				tamanio = 44;
 			}
 			print('Juego #${t.elapsedLoops}');
+			elapsedGame.text = '#${t.elapsedLoops}';
 			var termina:Bool = false;
 			// Juego
 			repartirFichas();
@@ -199,12 +202,21 @@ class PlayState extends FlxState
 					}
 				}
 			}
-			while (!termina)
+			t.active = false;
+			new FlxTimer().start(0.2, function(tp:FlxTimer)
 			{
+				for (spr in playerLabel)
+				{
+					spr.color = FlxColor.WHITE;
+				}
+				gameLabel.text = '';
+				gameLabel.color = FlxColor.WHITE;
+
 				tamanio = 44;
 				switch (jugador)
 				{
 					case 1: // Jugador 1
+						playerLabel[0].color = FlxColor.GREEN;
 						var indice = buscarFicha(player1, ultimaFicha1.s);
 						print(jugador + ' - ' + indice);
 						if (indice != -1)
@@ -216,7 +228,7 @@ class PlayState extends FlxState
 							if (player1[indice].esMula())
 							{
 								player1[indice].angle = 0;
-								tamanio = 22;
+								tamanio = 30;
 							}
 							player1[indice].scale.set(0.1, 0.1);
 							player1[indice].updateHitbox();
@@ -233,7 +245,10 @@ class PlayState extends FlxState
 								jugadoresGanados.player1++;
 								// break;
 								print("Jugador 1 Gana");
+								gameLabel.text = "Jugador 1 Gana";
 								termina = !termina;
+								t.active = true;
+								tp.cancel();
 							}
 							pass = 0;
 						}
@@ -247,7 +262,7 @@ class PlayState extends FlxState
 							if (player1[indice].esMula())
 							{
 								player1[indice].angle = 0;
-								tamanio = 22;
+								tamanio = 30;
 							}
 							player1[indice].scale.set(0.1, 0.1);
 							player1[indice].updateHitbox();
@@ -264,7 +279,10 @@ class PlayState extends FlxState
 								jugadoresGanados.player1++;
 								// break;
 								print("Jugador 1 Gana");
+								gameLabel.text = "Jugador 1 Gana";
 								termina = !termina;
+								t.active = true;
+								tp.cancel();
 							}
 							pass = 0;
 						}
@@ -275,6 +293,7 @@ class PlayState extends FlxState
 						}
 						jugador++;
 					case 2: // Jugador 2
+						playerLabel[1].color = FlxColor.GREEN;
 						var indice = buscarFicha(player2, ultimaFicha1.s);
 						print(jugador + ' - ' + indice);
 						if (indice != -1)
@@ -288,7 +307,7 @@ class PlayState extends FlxState
 							if (player2[indice].esMula())
 							{
 								player2[indice].angle = 0;
-								tamanio = 22;
+								tamanio = 30;
 							}
 							player2[indice].scale.set(0.1, 0.1);
 							player2[indice].updateHitbox();
@@ -305,7 +324,10 @@ class PlayState extends FlxState
 								jugadoresGanados.player2++;
 								// break;
 								print("Jugador 2 Gana");
+								gameLabel.text = "Jugador 2 Gana";
 								termina = !termina;
+								t.active = true;
+								tp.cancel();
 							}
 							pass = 0;
 						}
@@ -321,7 +343,7 @@ class PlayState extends FlxState
 							if (player2[indice].esMula())
 							{
 								player2[indice].angle = 0;
-								tamanio = 22;
+								tamanio = 30;
 							}
 							player2[indice].scale.set(0.1, 0.1);
 							player2[indice].updateHitbox();
@@ -338,7 +360,10 @@ class PlayState extends FlxState
 								jugadoresGanados.player2++;
 								// break;
 								print("Jugador 2 Gana");
+								gameLabel.text = "Jugador 2 Gana";
 								termina = !termina;
+								t.active = true;
+								tp.cancel();
 							}
 							pass = 0;
 						}
@@ -349,6 +374,7 @@ class PlayState extends FlxState
 						}
 						jugador++;
 					case 3:
+						playerLabel[2].color = FlxColor.GREEN;
 						var indice = buscarFicha(player3, ultimaFicha1.s);
 						print(jugador + ' - ' + indice);
 						if (indice != -1)
@@ -362,7 +388,7 @@ class PlayState extends FlxState
 							if (player3[indice].esMula())
 							{
 								player3[indice].angle = 0;
-								tamanio = 22;
+								tamanio = 30;
 							}
 							player3[indice].scale.set(0.1, 0.1);
 							player3[indice].updateHitbox();
@@ -379,7 +405,10 @@ class PlayState extends FlxState
 								jugadoresGanados.player3++;
 								// break;
 								print("Jugador 3 Gana");
+								gameLabel.text = "Jugador 3 Gana";
 								termina = !termina;
+								t.active = true;
+								tp.cancel();
 							}
 							pass = 0;
 						}
@@ -395,7 +424,7 @@ class PlayState extends FlxState
 							if (player3[indice].esMula())
 							{
 								player3[indice].angle = 0;
-								tamanio = 22;
+								tamanio = 30;
 							}
 							player3[indice].scale.set(0.1, 0.1);
 							player3[indice].updateHitbox();
@@ -412,7 +441,10 @@ class PlayState extends FlxState
 								jugadoresGanados.player3++;
 								// break;
 								print("Jugador 3 Gana");
+								gameLabel.text = "Jugador 3 Gana";
 								termina = !termina;
+								t.active = true;
+								tp.cancel();
 							}
 							pass = 0;
 						}
@@ -423,6 +455,7 @@ class PlayState extends FlxState
 						}
 						jugador++;
 					case 4:
+						playerLabel[3].color = FlxColor.GREEN;
 						var indice = buscarFicha(player4, ultimaFicha1.s);
 						print(jugador + ' - ' + indice);
 						if (indice != -1)
@@ -436,7 +469,7 @@ class PlayState extends FlxState
 							if (player4[indice].esMula())
 							{
 								player4[indice].angle = 0;
-								tamanio = 22;
+								tamanio = 30;
 							}
 							player4[indice].scale.set(0.1, 0.1);
 							player4[indice].updateHitbox();
@@ -453,7 +486,10 @@ class PlayState extends FlxState
 								jugadoresGanados.player4++;
 								// break;
 								print("Jugador 4 Gana");
+								gameLabel.text = "Jugador 4 Gana";
 								termina = !termina;
+								t.active = true;
+								tp.cancel();
 							}
 							pass = 0;
 						}
@@ -469,7 +505,7 @@ class PlayState extends FlxState
 							if (player4[indice].esMula())
 							{
 								player4[indice].angle = 0;
-								tamanio = 22;
+								tamanio = 30;
 							}
 							player4[indice].scale.set(0.1, 0.1);
 							player4[indice].updateHitbox();
@@ -486,7 +522,10 @@ class PlayState extends FlxState
 								jugadoresGanados.player4++;
 								// break;
 								print("Jugador 4 Gana");
+								gameLabel.text = "Jugador 4 Gana";
 								termina = !termina;
+								t.active = true;
+								tp.cancel();
 							}
 							pass = 0;
 						}
@@ -510,26 +549,33 @@ class PlayState extends FlxState
 					{
 						case 1:
 							print("Jugador 1 Gana");
+							gameLabel.text = "Jugador 1 Gana";
 							jugadoresGanados.player1++;
 						case 2:
 							print("Jugador 2 Gana");
+							gameLabel.text = "Jugador 2 Gana";
 							jugadoresGanados.player2++;
 						case 3:
 							print("Jugador 3 Gana");
+							gameLabel.text = "Jugador 3 Gana";
 							jugadoresGanados.player3++;
 						case 4:
 							print("Jugador 4 Gana");
+							gameLabel.text = "Jugador 4 Gana";
 							jugadoresGanados.player4++;
 						case _:
 							print("Empate");
+							gameLabel.text = "Empate";
+							gameLabel.color = FlxColor.RED;
 							jugadoresGanados.tie++;
 					}
-					break;
+					t.active = true;
+					tp.cancel();
 				}
-			}
+				if (t.finished && tp.finished)
+					openResultState(jugadoresGanados);
+			}, 0);
 			print("Termina");
-			if (t.finished)
-				openResultState(jugadoresGanados);
 		}
 
 		timer.start(0.5, juego, n);
@@ -713,10 +759,10 @@ class PlayState extends FlxState
 
 	function setLabels()
 	{
-		playerLabel.push(new FlxText(player1XY.x, player1XY.y - 20, 0, "Jugador 1"));
-		playerLabel.push(new FlxText(player2XY.x - 300, player2XY.y, 0, "Jugador 2"));
-		playerLabel.push(new FlxText(player3XY.x, player3XY.y - 20, 0, "Jugador 3"));
-		playerLabel.push(new FlxText(player4XY.x, player4XY.y - 50, 0, "Jugador 4"));
+		playerLabel.push(new FlxText(player1XY.x, player1XY.y - 20, 0, "Jugador 1", 14));
+		playerLabel.push(new FlxText(player2XY.x - 300, player2XY.y, 0, "Jugador 2", 14));
+		playerLabel.push(new FlxText(player3XY.x - 30, player3XY.y - 20, 0, "Jugador 3", 14));
+		playerLabel.push(new FlxText(player4XY.x, player4XY.y - 50, 0, "Jugador 4", 14));
 		for (spr in playerLabel)
 		{
 			add(spr);
@@ -727,7 +773,10 @@ class PlayState extends FlxState
 	{
 		print("Starting...");
 		if (!first)
+		{
 			reset();
+			elapsedGame.text = '';
+		}
 		Simulacion(Std.parseInt(textfield.text));
 	}
 
@@ -739,6 +788,11 @@ class PlayState extends FlxState
 		add(setTextField(20, 675));
 		add(setButton("Simular", 150, 680));
 		setLabels();
+		gameLabel = new FlxText(1020, 650, 0, '', 18);
+		add(gameLabel);
+		elapsedGame = new FlxText(5, 5, 0, '', 20);
+		elapsedGame.color = FlxColor.GRAY;
+		add(elapsedGame);
 	}
 
 	override public function update(elapsed:Float)

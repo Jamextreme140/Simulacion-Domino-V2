@@ -10,7 +10,7 @@ class Main extends Sprite
 		height: 720,
 		initState: PlayState,
 		framerate: 60,
-		skipSplash: true,
+		skipSplash: false,
 		startFullscreen: false
 	};
 
