@@ -32,9 +32,15 @@
 	<source path="source" />
 	<assets path="assets" />
 
+	<!-- _____________________________ Defines ____________________________ -->
+
+	<!--<define name="ALLOW_MODDING" />-->
+
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />
+	<haxelib name="polymod" if="ALLOW_MODDING"/>
+	<haxelib name="hscript" if="polymod"/>
 
 	<!--In case you want to use the addons package-->
 	<haxelib name="flixel-addons" />

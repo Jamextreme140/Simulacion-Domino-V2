@@ -1,11 +1,12 @@
-package;
+package states;
 
-import Ficha;
-import Utils;
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.ui.FlxUIInputText;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxAxes;
@@ -13,6 +14,9 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxTimer;
 import lime.app.Application;
+import objects.Ficha;
+import util.Constants;
+import util.Utils;
 #if cpp
 import cpp.vm.Gc;
 #elseif hl
@@ -21,6 +25,10 @@ import hl.Gc;
 
 class PlayState extends FlxState
 {
+	var camOther:FlxCamera;
+	var camHUD:FlxCamera;
+	var camBoard:FlxCamera;
+	var boardGroup:FlxTypedSpriteGroup<Ficha>;
 	var textfield:FlxUIInputText;
 	var button:FlxButton;
 	var timer:FlxTimer = new FlxTimer();
@@ -28,6 +36,7 @@ class PlayState extends FlxState
 	var gameLabel:FlxText;
 	var elapsedGame:FlxText;
 	var first:Bool = true;
+	var inGame = false;
 
 	/**
 	 * Jugador izquierda
@@ -107,7 +116,7 @@ class PlayState extends FlxState
 		};
 
 		var pass:Int = 0;
-		var tamanio = 44;
+		var tamanio:Float = Constants.TOKEN_OFFSET;
 		var jugador:Int = 0;
 
 		// Ficha izquierda
@@ -121,7 +130,7 @@ class PlayState extends FlxState
 		// Ficha derecha
 		function setUltimaFicha2(x:Float, y:Float, n:Int, s:Int)
 		{
-			ultimaFicha2.x = x + 22;
+			ultimaFicha2.x = x;
 			ultimaFicha2.y = y;
 			ultimaFicha2.n = n;
 			ultimaFicha2.s = s;
@@ -170,7 +179,7 @@ class PlayState extends FlxState
 				setUltimaFicha2(0, 0, 0, 0);
 				jugador = 0;
 				pass = 0;
-				tamanio = 44;
+				tamanio = Constants.TOKEN_OFFSET;
 			}
 			print('Juego #${t.elapsedLoops}');
 			elapsedGame.text = '#${t.elapsedLoops}';
@@ -189,9 +198,12 @@ class PlayState extends FlxState
 					{
 						derecha.push(j);
 						j.scale.set(0.1, 0.1);
+						j.angle = 0;
 						j.updateHitbox();
 						j.screenCenter();
-						j.angle = 0;
+						j.scrollFactor.set(1, 1);
+						boardGroup.add(j);
+						remove(j);
 						players[jugador - 1].remove(j);
 						setUltimaFicha1(j.x, j.y, j.North, j.South);
 						setUltimaFicha2(j.x, j.y, j.North, j.South);
@@ -205,6 +217,7 @@ class PlayState extends FlxState
 			t.active = false;
 			new FlxTimer().start(0.2, function(tp:FlxTimer)
 			{
+				inGame = true;
 				for (spr in playerLabel)
 				{
 					spr.color = FlxColor.WHITE;
@@ -212,7 +225,7 @@ class PlayState extends FlxState
 				gameLabel.text = '';
 				gameLabel.color = FlxColor.WHITE;
 
-				tamanio = 44;
+				tamanio = Constants.TOKEN_OFFSET;
 				switch (jugador)
 				{
 					case 1: // Jugador 1
@@ -228,7 +241,7 @@ class PlayState extends FlxState
 							if (player1[indice].esMula())
 							{
 								player1[indice].angle = 0;
-								tamanio = 30;
+								tamanio = Constants.TOKEN_MULE_OFFSET;
 							}
 							player1[indice].scale.set(0.1, 0.1);
 							player1[indice].updateHitbox();
@@ -239,6 +252,9 @@ class PlayState extends FlxState
 							else
 								setUltimaFicha1(player1[indice].x, player1[indice].y, player1[indice].North, player1[indice].South);
 							izquierda.push(player1[indice]);
+							player1[indice].scrollFactor.set(1, 1);
+							boardGroup.add(player1[indice]);
+							remove(player1[indice]);
 							player1.remove(player1[indice]);
 							if (player1.length <= 0)
 							{
@@ -262,7 +278,7 @@ class PlayState extends FlxState
 							if (player1[indice].esMula())
 							{
 								player1[indice].angle = 0;
-								tamanio = 30;
+								tamanio = Constants.TOKEN_MULE_OFFSET;
 							}
 							player1[indice].scale.set(0.1, 0.1);
 							player1[indice].updateHitbox();
@@ -273,6 +289,9 @@ class PlayState extends FlxState
 							else
 								setUltimaFicha2(player1[indice].x, player1[indice].y, player1[indice].South, player1[indice].North);
 							derecha.push(player1[indice]);
+							player1[indice].scrollFactor.set(1, 1);
+							boardGroup.add(player1[indice]);
+							remove(player1[indice]);
 							player1.remove(player1[indice]);
 							if (player1.length <= 0)
 							{
@@ -307,7 +326,7 @@ class PlayState extends FlxState
 							if (player2[indice].esMula())
 							{
 								player2[indice].angle = 0;
-								tamanio = 30;
+								tamanio = Constants.TOKEN_MULE_OFFSET;
 							}
 							player2[indice].scale.set(0.1, 0.1);
 							player2[indice].updateHitbox();
@@ -318,6 +337,9 @@ class PlayState extends FlxState
 							else
 								setUltimaFicha1(player2[indice].x, player2[indice].y, player2[indice].North, player2[indice].South);
 							izquierda.push(player2[indice]);
+							player2[indice].scrollFactor.set(1, 1);
+							boardGroup.add(player2[indice]);
+							remove(player2[indice]);
 							player2.remove(player2[indice]);
 							if (player2.length <= 0)
 							{
@@ -343,7 +365,7 @@ class PlayState extends FlxState
 							if (player2[indice].esMula())
 							{
 								player2[indice].angle = 0;
-								tamanio = 30;
+								tamanio = Constants.TOKEN_MULE_OFFSET;
 							}
 							player2[indice].scale.set(0.1, 0.1);
 							player2[indice].updateHitbox();
@@ -354,6 +376,9 @@ class PlayState extends FlxState
 							else
 								setUltimaFicha2(player2[indice].x, player2[indice].y, player2[indice].South, player2[indice].North);
 							derecha.push(player2[indice]);
+							player2[indice].scrollFactor.set(1, 1);
+							boardGroup.add(player2[indice]);
+							remove(player2[indice]);
 							player2.remove(player2[indice]);
 							if (player2.length <= 0)
 							{
@@ -388,7 +413,7 @@ class PlayState extends FlxState
 							if (player3[indice].esMula())
 							{
 								player3[indice].angle = 0;
-								tamanio = 30;
+								tamanio = Constants.TOKEN_MULE_OFFSET;
 							}
 							player3[indice].scale.set(0.1, 0.1);
 							player3[indice].updateHitbox();
@@ -399,6 +424,9 @@ class PlayState extends FlxState
 							else
 								setUltimaFicha1(player3[indice].x, player3[indice].y, player3[indice].North, player3[indice].South);
 							izquierda.push(player3[indice]);
+							player3[indice].scrollFactor.set(1, 1);
+							boardGroup.add(player3[indice]);
+							remove(player3[indice]);
 							player3.remove(player3[indice]);
 							if (player3.length <= 0)
 							{
@@ -424,7 +452,7 @@ class PlayState extends FlxState
 							if (player3[indice].esMula())
 							{
 								player3[indice].angle = 0;
-								tamanio = 30;
+								tamanio = Constants.TOKEN_MULE_OFFSET;
 							}
 							player3[indice].scale.set(0.1, 0.1);
 							player3[indice].updateHitbox();
@@ -435,6 +463,9 @@ class PlayState extends FlxState
 							else
 								setUltimaFicha2(player3[indice].x, player3[indice].y, player3[indice].South, player3[indice].North);
 							derecha.push(player3[indice]);
+							player3[indice].scrollFactor.set(1, 1);
+							boardGroup.add(player3[indice]);
+							remove(player3[indice]);
 							player3.remove(player3[indice]);
 							if (player3.length <= 0)
 							{
@@ -469,7 +500,7 @@ class PlayState extends FlxState
 							if (player4[indice].esMula())
 							{
 								player4[indice].angle = 0;
-								tamanio = 30;
+								tamanio = Constants.TOKEN_MULE_OFFSET;
 							}
 							player4[indice].scale.set(0.1, 0.1);
 							player4[indice].updateHitbox();
@@ -480,6 +511,9 @@ class PlayState extends FlxState
 							else
 								setUltimaFicha1(player4[indice].x, player4[indice].y, player4[indice].North, player4[indice].South);
 							izquierda.push(player4[indice]);
+							player4[indice].scrollFactor.set(1, 1);
+							boardGroup.add(player4[indice]);
+							remove(player4[indice]);
 							player4.remove(player4[indice]);
 							if (player4.length <= 0)
 							{
@@ -505,7 +539,7 @@ class PlayState extends FlxState
 							if (player4[indice].esMula())
 							{
 								player4[indice].angle = 0;
-								tamanio = 30;
+								tamanio = Constants.TOKEN_MULE_OFFSET;
 							}
 							player4[indice].scale.set(0.1, 0.1);
 							player4[indice].updateHitbox();
@@ -516,6 +550,9 @@ class PlayState extends FlxState
 							else
 								setUltimaFicha2(player4[indice].x, player4[indice].y, player4[indice].South, player4[indice].North);
 							derecha.push(player4[indice]);
+							player4[indice].scrollFactor.set(1, 1);
+							boardGroup.add(player4[indice]);
+							remove(player4[indice]);
 							player4.remove(player4[indice]);
 							if (player4.length <= 0)
 							{
@@ -576,6 +613,7 @@ class PlayState extends FlxState
 					openResultState(jugadoresGanados);
 			}, 0);
 			print("Termina");
+			inGame = false;
 		}
 
 		timer.start(0.5, juego, n);
@@ -586,6 +624,7 @@ class PlayState extends FlxState
 		#if hl
 		Gc.enable(true);
 		#end
+		boardGroup.clear();
 		for (i in players)
 		{
 			FlxDestroyUtil.destroyArray(i);
@@ -673,6 +712,8 @@ class PlayState extends FlxState
 					i.push(new Ficha(player3XY.x, player3XY.y + (45 * j), player3XY.angle, n, s));
 				else if (i == player4) // Abajo
 					i.push(new Ficha(player4XY.x + (45 * j), player4XY.y, player4XY.angle, n, s));
+				i[j].scrollFactor.set();
+				i[j].cameras = [camHUD];
 				add(i[j]);
 				j++;
 			}
@@ -733,6 +774,7 @@ class PlayState extends FlxState
 		title.color = FlxColor.fromRGB(54, 54, 54);
 		title.size = size;
 		title.screenCenter();
+		title.cameras = [camBoard];
 		return title;
 	}
 
@@ -742,18 +784,24 @@ class PlayState extends FlxState
 		Text.text = text;
 		Text.color = FlxColor.WHITE;
 		Text.size = 16;
+		Text.cameras = [camHUD];
+		Text.scrollFactor.set();
 		return Text;
 	}
 
 	function setTextField(x:Float, y:Float)
 	{
 		textfield = new FlxUIInputText(x, y, 100, null, 16);
+		textfield.cameras = [camHUD];
+		textfield.scrollFactor.set();
 		return textfield;
 	}
 
 	function setButton(text:String, x:Float, y:Float)
 	{
 		button = new FlxButton(x, y, text, onButtonClicked);
+		button.cameras = [camHUD];
+		button.scrollFactor.set();
 		return button;
 	}
 
@@ -765,6 +813,8 @@ class PlayState extends FlxState
 		playerLabel.push(new FlxText(player4XY.x, player4XY.y - 50, 0, "Jugador 4", 14));
 		for (spr in playerLabel)
 		{
+			spr.cameras = [camHUD];
+			spr.scrollFactor.set();
 			add(spr);
 		}
 	}
@@ -774,8 +824,15 @@ class PlayState extends FlxState
 		print("Starting...");
 		if (!first)
 		{
+			camHUD.alpha = 0;
 			reset();
 			elapsedGame.text = '';
+		}
+		button.status = FlxButtonState.DISABLED;
+		if (inGame)
+		{
+			trace("Tried to start during game");
+			return;
 		}
 		Simulacion(Std.parseInt(textfield.text));
 	}
@@ -783,16 +840,36 @@ class PlayState extends FlxState
 	override public function create()
 	{
 		super.create();
+
+		camBoard = new FlxCamera();
+		camHUD = new FlxCamera();
+		camOther = new FlxCamera();
+		camHUD.bgColor.alpha = 0;
+		camOther.bgColor.alpha = 0;
+
+		FlxG.cameras.reset(camBoard);
+		FlxG.cameras.setDefaultDrawTarget(camBoard, true);
+		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.add(camOther, false);
+
 		add(setTitle("Domino", /*550, 20,*/ 48));
 		add(setText("¿Cuantos juegos quieres jugar?", 20, 650));
 		add(setTextField(20, 675));
 		add(setButton("Simular", 150, 680));
 		setLabels();
 		gameLabel = new FlxText(1020, 650, 0, '', 18);
+		gameLabel.cameras = [camHUD];
+		gameLabel.scrollFactor.set();
 		add(gameLabel);
 		elapsedGame = new FlxText(5, 5, 0, '', 20);
 		elapsedGame.color = FlxColor.GRAY;
+		elapsedGame.cameras = [camHUD];
+		elapsedGame.scrollFactor.set();
 		add(elapsedGame);
+
+		boardGroup = new FlxTypedSpriteGroup<Ficha>();
+		boardGroup.cameras = [camBoard];
+		add(boardGroup);
 	}
 
 	override public function update(elapsed:Float)
@@ -808,14 +885,18 @@ class PlayState extends FlxState
 			FlxG.sound.muteKeys = [ZERO, NUMPADZERO];
 		}
 
-		if (FlxG.keys.pressed.LEFT)
+		if (!inGame)
 		{
-			FlxG.camera.scroll.x -= elapsed * 200;
+			if (FlxG.keys.pressed.LEFT)
+			{
+				FlxG.camera.scroll.x -= elapsed * 200;
+			}
+			else if (FlxG.keys.pressed.RIGHT)
+			{
+				FlxG.camera.scroll.x += elapsed * 200;
+			}
 		}
-		else if (FlxG.keys.pressed.RIGHT)
-		{
-			FlxG.camera.scroll.x += elapsed * 200;
-		}
+
 		super.update(elapsed);
 	}
 
@@ -826,11 +907,17 @@ class PlayState extends FlxState
 
 	function print(v:Dynamic)
 	{
+		#if DEBUG
 		haxe.Log.trace(v, null);
+		#end
+		return;
 	}
 
 	function openResultState(players:Dynamic)
 	{
-		openSubState(new ResultState(players));
+		camHUD.alpha = 0.4;
+		inGame = false;
+		button.status = FlxButtonState.NORMAL;
+		openSubState(new ResultSubState(players));
 	}
 }

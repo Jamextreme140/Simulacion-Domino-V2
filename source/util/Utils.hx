@@ -1,3 +1,5 @@
+package util;
+
 class Utils
 {
 	public static function arrayDuplicates<T>(arr:Array<T>)

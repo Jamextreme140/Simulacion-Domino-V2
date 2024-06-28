@@ -1,3 +1,5 @@
+package objects;
+
 import flixel.FlxSprite;
 
 class Ficha extends FlxSprite

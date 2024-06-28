@@ -1,3 +1,5 @@
+package states;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -6,7 +8,7 @@ import flixel.ui.FlxButton;
 import flixel.util.FlxAxes;
 import flixel.util.FlxColor;
 
-class ResultState extends FlxSubState
+class ResultSubState extends FlxSubState
 {
 	var jugadoresGanados:PlayerList;
 	var info:FlxText;
@@ -17,13 +19,17 @@ class ResultState extends FlxSubState
 
 	public function new(players:PlayerList)
 	{
-		super(FlxColor.fromRGB(0, 0, 0, 150));
+		super();
 		jugadoresGanados = players;
 	}
 
 	override function create()
 	{
 		super.create();
+
+		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+
+		this.bgColor = FlxColor.fromRGB(0, 0, 0, 150);
 
 		var text = new FlxText(430, 20);
 		text.text = "Resultados Finales";
